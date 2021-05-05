@@ -25,7 +25,8 @@ syscall(void)
 
 ## Makefile
 ```diff
-CS333_PROJECT ?= 1
++CS333_PROJECT ?= 1
+-CS333_PROJECT ?= 0
 PRINT_SYSCALLS ?= 0
 CS333_CFLAGS ?= -DPDX_XV6
 ifeq ($(CS333_CFLAGS), -DPDX_XV6)
@@ -39,6 +40,7 @@ endif
 ifeq ($(CS333_PROJECT), 1)
 CS333_CFLAGS += -DCS333_P1
 CS333_UPROGS += _date
+CS333_UPROGS += #_date
 endif
 ```
 
@@ -67,9 +69,9 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int halt(void);
-#ifdef CS333_P1
-int date(struct rtcdate*);
-#endif // CS333_P1
++#ifdef CS333_P1
++int date(struct rtcdate*);
+=#endif // CS333_P1
 ```
 
 ## usys.s
@@ -96,7 +98,7 @@ SYSCALL(sbrk)
 SYSCALL(sleep)
 SYSCALL(uptime)
 SYSCALL(halt)
-SYSCALL(date)
++SYSCALL(date)
 ```
 
 ## syscall.h
@@ -123,7 +125,7 @@ SYSCALL(date)
 #define SYS_mkdir   SYS_link+1
 #define SYS_close   SYS_mkdir+1
 #define SYS_halt    SYS_close+1
-#define SYS_date    SYS_halt+1
++#define SYS_date    SYS_halt+1
 ```
 
 ## syscall.c
@@ -152,10 +154,10 @@ extern int sys_uptime(void);
 #ifdef PDX_XV6
 extern int sys_halt(void);
 #endif // PDX_XV6
-#ifdef CS333_P1
-// internally, the function prototype must be 'int' not 'uint' for sys_date()
-extern int sys_date(void);
-#endif // CS333_P1
++#ifdef CS333_P1
++// internally, the function prototype must be 'int' not 'uint' for sys_date()
++extern int sys_date(void);
++#endif // CS333_P1
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -182,25 +184,25 @@ static int (*syscalls[])(void) = {
 #ifdef PDX_XV6
 [SYS_halt]    sys_halt,
 #endif // PDX_XV6
-#ifdef CS333_P1
-[SYS_date]    sys_date,
-#endif // CS333_P1
++#ifdef CS333_P1
++[SYS_date]    sys_date,
++#endif // CS333_P1
 };
 ```
 
 ## sysproc.c
 ```diff
-int
-sys_date(void)
-{
-  struct rtcdate *d;
-  if(argptr(0, (void*)&d, sizeof(struct rtcdate)) <0)
-    return -1;
-  else{
-    cmostime(d);
-    return 0;
-  }
-}
++int
++sys_date(void)
++{
++  struct rtcdate *d;
++  if(argptr(0, (void*)&d, sizeof(struct rtcdate)) <0)
++    return -1;
++  else{
++    cmostime(d);
++    return 0;
++  }
++}
 ```
 
 # 5. Process Information
@@ -221,7 +223,7 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
-  uint start_ticks;
++  uint start_ticks;
 };
 ```
 
@@ -230,8 +232,8 @@ struct proc {
 void
 procdumpP1(struct proc *p, char *state_string)
 {
-  int sekarang = ticks - (p -> start_ticks);
-  cprintf("%d\t%s\t\t%d,%d\t%s\t%d\t", p->pid, p->name, sekarang/1000 , sekarang%1000, states[p->state], p->sz);
++  int sekarang = ticks - (p -> start_ticks);
++  cprintf("%d\t%s\t\t%d,%d\t%s\t%d\t", p->pid, p->name, sekarang/1000 , sekarang%1000, states[p->state], p->sz);
   return;
 }
 #endif
