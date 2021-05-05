@@ -1,4 +1,4 @@
-**Assignment 1 - OS class**
+# Assignment 1 - OS class
 
 
 Name : Ferdy Nugraha Rachmadi
