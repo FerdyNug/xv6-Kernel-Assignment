@@ -1,8 +1,6 @@
-# xv6-Kernel-Assignment
-
-
-Name : Nehemiah Austen Pison
-NIM : 1313619021
+Assignment 1 - OS class
+Name : Ferdy Nugraha Rachmadi
+NIM : 1313619011
 
 To see the code changes please open the file diff_report.md
 To see the screenshots please open the folder usertests
