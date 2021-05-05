@@ -71,7 +71,7 @@ int uptime(void);
 int halt(void);
 +#ifdef CS333_P1
 +int date(struct rtcdate*);
-=#endif // CS333_P1
++#endif // CS333_P1
 ```
 
 ## usys.s
@@ -228,6 +228,7 @@ struct proc {
 ```
 
 ## Proc.c
+```diff
 #elif defined(CS333_P1)
 void
 procdumpP1(struct proc *p, char *state_string)
