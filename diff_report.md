@@ -1,71 +1,148 @@
 ## defs.h
 
 ```C
-#ifdef CS333_P2
-#include "uproc.h"
-#endif
++ #ifdef CS333_P2
++ #include "uproc.h"
++ #endif
+
+struct buf;
+struct context;
+struct file;
+struct inode;
+struct pipe;
+struct proc;
+struct rtcdate;
+struct spinlock;
+struct sleeplock;
+struct stat;
+struct superblock;
 ```
 
 ```C
-#ifdef CS333_P2
-int             getprocs(uint max, struct uproc* upTable);
-#endif
+int             cpuid(void);
+void            exit(void);
+int             fork(void);
+int             growproc(int);
+int             kill(int);
+struct cpu*     mycpu(void);
+struct proc*    myproc();
+void            pinit(void);
+void            procdump(void);
+void            scheduler(void) __attribute__((noreturn));
+void            sched(void);
+void            setproc(struct proc*);
+void            sleep(void*, struct spinlock*);
+void            userinit(void);
+int             wait(void);
+void            wakeup(void*);
+void            yield(void);
++ #ifdef CS333_P2
++ int             getprocs(uint max, struct uproc* upTable);
++ #endif
 ```
 
 ## proc.c
 
 ```C
-#ifdef CS333_P2
-  #include "uproc.h"
-#endif
+#include "types.h"
+#include "defs.h"
+#include "param.h"
+#include "memlayout.h"
+#include "mmu.h"
+#include "x86.h"
+#include "proc.h"
+#include "spinlock.h"
+
++ #ifdef CS333_P2
++ #include "uproc.h"
++ #endif
 ```
 
 ### allocproc(void)
 
 ```C
-#ifdef CS333_P2
-  p->cpu_ticks_total = 0;
-  p->cpu_ticks_in = 0;
-#endif // CS333_P2
+sp -= sizeof *p->context;
+  p->context = (struct context*)sp;
+  memset(p->context, 0, sizeof *p->context);
+  p->context->eip = (uint)forkret;
+
+  p->start_ticks = ticks;
+
++ #ifdef CS333_P2
++  p->cpu_ticks_total = 0;
++  p->cpu_ticks_in = 0;
++ #endif // CS333_P2
+
+  return p;
 ```
 
 ### userinit(void)
 
 ```C
-#ifdef CS333_P2
-  p->uid = DEFAULT_UID;
-  p->gid = DEFAULT_GID;
-#endif
++ #ifdef CS333_P2
++  p->uid = DEFAULT_UID;
++  p->gid = DEFAULT_GID;
++ #endif
+
+  safestrcpy(p->name, "initcode", sizeof(p->name));
+  p->cwd = namei("/");
 ```
 
 ### fork(void)
 
 ```C
-#ifdef CS333_P2
-  np->uid = curproc->uid;
-  np->gid = curproc->gid;
-#endif
+np->sz = curproc->sz;
+  np->parent = curproc;
+  *np->tf = *curproc->tf;
+
++ #ifdef CS333_P2
++  np->uid = curproc->uid;
++  np->gid = curproc->gid;
++ #endif
+
 ```
 
 ### scheduler(void)
 
 ```C
+#ifdef PDX_XV6
+      idle = 0;  // not idle this timeslice
+#endif // PDX_XV6
+      c->proc = p;
+      switchuvm(p);
+      p->state = RUNNING;
 #ifdef CS333_P2
-  p->cpu_ticks_in = ticks;
+        p->cpu_ticks_in = ticks;
 #endif // CS333_P2
+      swtch(&(c->scheduler), p->context);
+      switchkvm();
 ```
 
 ### sched(void)
 
 ```C
+if(!holding(&ptable.lock))
+    panic("sched ptable.lock");
+  if(mycpu()->ncli != 1)
+    panic("sched locks");
+  if(p->state == RUNNING)
+    panic("sched running");
+  if(readeflags()&FL_IF)
+    panic("sched interruptible");
+  intena = mycpu()->intena;
 #ifdef CS333_P2
   p->cpu_ticks_total += (ticks - p->cpu_ticks_in);
 #endif // CS333_P2
+  swtch(&p->context, mycpu()->scheduler);
+  mycpu()->intena = intena;
+}
 ```
 
 ### procdumpP2P3P4(struct proc *p, char *state_string)
 
 ```C
+procdumpP2P3P4(struct proc *p, char *state_string)
+{
   uint elapsed = ticks-p->start_ticks;
   uint elapsedLeft = (elapsed) / 1000;
   uint elapsedRight = elapsed % 1000;
@@ -103,7 +180,7 @@ int             getprocs(uint max, struct uproc* upTable);
     cpuMs,
     state_string, 
     p->sz
-  );
+}
 ```
 
 ### getprocs(uint max, struct uproc* upTable)
@@ -373,10 +450,33 @@ int getprocs(uint max, struct uproc* table);
 ## usys.s
 
 ```C
-SYSCALL(getuid)
-SYSCALL(getgid)
-SYSCALL(getppid)
-SYSCALL(setuid)
-SYSCALL(setgid)
-SYSCALL(getprocs)
+SYSCALL(fork)
+SYSCALL(exit)
+SYSCALL(wait)
+SYSCALL(pipe)
+SYSCALL(read)
+SYSCALL(write)
+SYSCALL(close)
+SYSCALL(kill)
+SYSCALL(exec)
+SYSCALL(open)
+SYSCALL(mknod)
+SYSCALL(unlink)
+SYSCALL(fstat)
+SYSCALL(link)
+SYSCALL(mkdir)
+SYSCALL(chdir)
+SYSCALL(dup)
+SYSCALL(getpid)
+SYSCALL(sbrk)
+SYSCALL(sleep)
+SYSCALL(uptime)
+SYSCALL(halt)
+SYSCALL(date)
++ SYSCALL(getuid)
++ SYSCALL(getgid)
++ SYSCALL(getppid)
++ SYSCALL(setuid)
++ SYSCALL(setgid)
++ SYSCALL(getprocs)
 ```
