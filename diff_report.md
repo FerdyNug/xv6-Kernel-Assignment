@@ -1,9 +1,9 @@
 ## defs.h
 
 ```C
-+ #ifdef CS333_P2
-+ #include "uproc.h"
-+ #endif
++#ifdef CS333_P2
++#include "uproc.h"
++#endif
 
 struct buf;
 struct context;
