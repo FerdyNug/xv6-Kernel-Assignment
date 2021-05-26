@@ -1,11 +1,11 @@
 ## defs.h
-Line 1 - 3:
+
 ```C
 #ifdef CS333_P2
 #include "uproc.h"
 #endif
 ```
-Line 131 - 133:
+
 ```C
 #ifdef CS333_P2
 int             getprocs(uint max, struct uproc* upTable);
@@ -13,7 +13,7 @@ int             getprocs(uint max, struct uproc* upTable);
 ```
 
 ## proc.c
-Line 10 - 12:
+
 ```C
 #ifdef CS333_P2
   #include "uproc.h"
@@ -21,7 +21,7 @@ Line 10 - 12:
 ```
 
 ### allocproc(void)
-Line 160 - 163:
+
 ```C
 #ifdef CS333_P2
   p->cpu_ticks_total = 0;
@@ -30,7 +30,7 @@ Line 160 - 163:
 ```
 
 ### userinit(void)
-Line 192 - 195:
+
 ```C
 #ifdef CS333_P2
   p->uid = DEFAULT_UID;
@@ -39,7 +39,7 @@ Line 192 - 195:
 ```
 
 ### fork(void)
-Line 257 - 260:
+
 ```C
 #ifdef CS333_P2
   np->uid = curproc->uid;
@@ -48,7 +48,7 @@ Line 257 - 260:
 ```
 
 ### scheduler(void)
-Line 415 - 417:
+
 ```C
 #ifdef CS333_P2
   p->cpu_ticks_in = ticks;
@@ -56,7 +56,7 @@ Line 415 - 417:
 ```
 
 ### sched(void)
-Line 460 - 462:
+
 ```C
 #ifdef CS333_P2
   p->cpu_ticks_total += (ticks - p->cpu_ticks_in);
@@ -64,7 +64,7 @@ Line 460 - 462:
 ```
 
 ### procdumpP2P3P4(struct proc *p, char *state_string)
-Line 591 - 628:
+
 ```C
   uint elapsed = ticks-p->start_ticks;
   uint elapsedLeft = (elapsed) / 1000;
@@ -107,7 +107,7 @@ Line 591 - 628:
 ```
 
 ### getprocs(uint max, struct uproc* upTable)
-Line 1008 - 1036:
+
 ```C
 struct proc* p;
 int procsNumber = 0;
@@ -141,7 +141,7 @@ return procsNumber;
 ```
 
 ## proc.h
-Line 55 - 60:
+
 ```C
 #ifdef CS333_P2
   uint uid;
@@ -153,7 +153,7 @@ Line 55 - 60:
 
 ## ps.c
 ### main(void)
-Line 11 - 59:
+
 ```C
 struct uproc *proc = malloc(sizeof(struct uproc)*MAX);
 int procsNumber = getprocs(MAX, proc);
@@ -207,7 +207,7 @@ exit();
 ```
 
 ## syscall.c
-Line 113 - 120:
+
 ```C
 #ifdef CS333_P2
 extern int sys_getuid(void);
@@ -219,7 +219,7 @@ extern int sys_getprocs(void);
 #endif
 ```
 
-Line 150 - 157:
+
 ```C
 #ifdef CS333_P2
 [SYS_getuid]    sys_getuid,
@@ -232,7 +232,7 @@ Line 150 - 157:
 ```
 
 ## syscall.h
-Line 25 - 30:
+
 ```C
 #define SYS_getuid      SYS_date+1
 #define SYS_getgid      SYS_getuid+1
@@ -243,21 +243,21 @@ Line 25 - 30:
 ```
 ## sysproc.c
 ### sys_getuid(void)
-Line 122 - 123:
+
 ```C
 struct proc *curproc = myproc();
 return curproc->uid;
 ```
 
 ### sys_getgid(void)
-Line 129 - 130:
+
 ```C
 struct proc *curproc = myproc();
 return curproc->gid;
 ```
 
 ### sys_getppid(void)
-Line 136 - 138:
+
 ```C
 struct proc *curproc = myproc();
 struct proc *parent = curproc->parent;
@@ -265,7 +265,7 @@ return parent != NULL ? parent->pid : 0;
 ```
 
 ### sys_setuid(void)
-Line 143 - 153:
+
 ```C
 uint uid;
 struct proc *curproc = myproc();
@@ -281,7 +281,7 @@ return -1;
 ```
 
 ### sys_setgid(void)
-Line 158 - 168:
+
 ```C
 uint gid;
 struct proc *curproc = myproc();
@@ -297,7 +297,7 @@ return -1;
 ```
 
 ### sys_getprocs(void)
-Line 173 - 184:
+
 ```C
 uint max;
 struct uproc* proc;
@@ -315,7 +315,7 @@ return -1;
 
 ## time.c
 ### main(int argc, char *argv[])
-Line 6 - 45:
+
 ```C
 if(argc == 1) {
   printf(1, "(null) ran in 0.00\n");
@@ -359,7 +359,7 @@ if(argc == 1) {
 exit();
 ```
 ## user.h
-Line 52 - 58:
+
 ```C
 uint getuid(void);
 uint getgid(void);
@@ -371,7 +371,7 @@ int getprocs(uint max, struct uproc* table);
 ```
 
 ## usys.s
-Line 34 - 39:
+
 ```C
 SYSCALL(getuid)
 SYSCALL(getgid)
