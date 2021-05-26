@@ -1,56 +1,34 @@
-## syscall.c
-Line 109 - 112:
 ## defs.h
 Line 1 - 3:
 ```C
-#ifdef CS333_P1
-// internally, the function prototype must be ’int’ not ’uint’ for sys_date()
-extern int sys_date(void);
-#endif // CS333_P1
 #ifdef CS333_P2
 #include "uproc.h"
 #endif
 ```
-Line 139 - 141:
 Line 131 - 133:
 ```C
-#ifdef CS333_P1
-[SYS_date]    sys_date,
 #ifdef CS333_P2
 int             getprocs(uint max, struct uproc* upTable);
 #endif
 ```
 
-### syscall
-Line 184 - 188:
 ## proc.c
 Line 10 - 12:
 ```C
-#ifdef CS333_P1
-  #ifdef PRINT_SYSCALLS
-    cprintf("%s->%d\n", syscallnames[num], num);
-  #endif
 #ifdef CS333_P2
   #include "uproc.h"
 #endif
 ```
 
-## user.h
-Line 47 - 49:
 ### allocproc(void)
 Line 160 - 163:
 ```C
-#ifdef CS333_P1
-int date(struct rtcdate*);
-#endif // CS333_P1
 #ifdef CS333_P2
   p->cpu_ticks_total = 0;
   p->cpu_ticks_in = 0;
 #endif // CS333_P2
 ```
 
-## usys.s
-Line 33:
 ### userinit(void)
 Line 192 - 195:
 ```C
@@ -68,7 +46,6 @@ Line 257 - 260:
   np->gid = curproc->gid;
 #endif
 ```
-SYSCALL(date)
 
 ### scheduler(void)
 Line 415 - 417:
@@ -78,25 +55,17 @@ Line 415 - 417:
 #endif // CS333_P2
 ```
 
-## syscall.h
-Line 24:
 ### sched(void)
 Line 460 - 462:
 ```C
-#define SYS_date    SYS_halt+1
 #ifdef CS333_P2
   p->cpu_ticks_total += (ticks - p->cpu_ticks_in);
 #endif // CS333_P2
 ```
 
-## sysproc.c
-### sys_date
-Line 109 - 110:
 ### procdumpP2P3P4(struct proc *p, char *state_string)
 Line 591 - 628:
 ```C
-cmostime(d);
-return 0;
   uint elapsed = ticks-p->start_ticks;
   uint elapsedLeft = (elapsed) / 1000;
   uint elapsedRight = elapsed % 1000;
@@ -106,16 +75,19 @@ return 0;
   uint cpuSecond = cpuTicksTotal / 1000;
   uint cpuMs = cpuTicksTotal % 1000;
   uint ppid = p->parent ? p->parent->pid : p->pid;
+
   if (elapsedRight < 10) {
     zeros = "00";
   } else if (elapsedRight < 100) {
     zeros = "0";
   }
+
   if (cpuMs < 10) {
     cpuZeros = "00";
   } else if (cpuMs < 100) {
     cpuZeros = "0";
   }
+
   cprintf(
     "\n%d\t%s\t%d\t%d\t%d\t%d.%s%d\t%d.%s%d\t%s\t%d\t", 
     p->pid, 
@@ -140,6 +112,7 @@ Line 1008 - 1036:
 struct proc* p;
 int procsNumber = 0;
 acquire(&ptable.lock);
+
 for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
   if (procsNumber < max) {
     if(p->state != UNUSED && p->state != EMBRYO) {
@@ -148,6 +121,7 @@ for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       } else {
         safestrcpy(upTable[procsNumber].state,"???",STRMAX);
       }
+
       upTable[procsNumber].pid = p->pid;
       upTable[procsNumber].uid = p->uid;
       upTable[procsNumber].gid = p->gid;
@@ -167,11 +141,8 @@ return procsNumber;
 ```
 
 ## proc.h
-Line 52 - 54 (inside struc proc):
 Line 55 - 60:
 ```C
-#ifdef CS333_P1
-  uint start_ticks;
 #ifdef CS333_P2
   uint uid;
   uint gid;
@@ -180,18 +151,14 @@ Line 55 - 60:
 #endif
 ```
 
-## proc.c
-### allocproc
-Line 152 - 154:
 ## ps.c
 ### main(void)
 Line 11 - 59:
 ```C
-#ifdef CS333_P1
-  p->start_ticks = ticks;
 struct uproc *proc = malloc(sizeof(struct uproc)*MAX);
 int procsNumber = getprocs(MAX, proc);
 printf(1,"PID\tName\t\tUID\tGID\tPPID\tElapsed\tCPU\tState\tSize\n");
+
 int i;
 for(i = 0; i<procsNumber; i++){
   struct uproc currentProc = proc[i];
@@ -203,16 +170,19 @@ for(i = 0; i<procsNumber; i++){
   uint cpuTotalTicksSecond = cpuTotalTicks/1000;
   uint cpuTotalTicksMs = cpuTotalTicks % 1000;
   char* cpuZeros = "";
+
   if (elapsedTicksMs < 10) {
     zeros = "00";
   } else if (elapsedTicksMs < 100) {
     zeros = "0";
   }
+
   if(cpuTotalTicksMs < 10){
     cpuZeros = "00";
   } else if (cpuTotalTicksMs < 100) {
     cpuZeros = "0";
   }
+
   printf(
     1,
     "%d\t%s\t\t%d\t%d\t%d\t%d.%s%d\t%d.%s%d\t%s\t%d\n",
@@ -231,6 +201,7 @@ for(i = 0; i<procsNumber; i++){
     currentProc.size
   );
 }
+
 free(proc);
 exit();
 ```
@@ -248,13 +219,8 @@ extern int sys_getprocs(void);
 #endif
 ```
 
-### procdumpP1
-Line 570 - 574:
 Line 150 - 157:
 ```C
-uint elapsed = ticks-p->start_ticks;
-uint elapsedLeft = (elapsed) / 1000;
-uint elapsedRight = elapsed % 1000;
 #ifdef CS333_P2
 [SYS_getuid]    sys_getuid,
 [SYS_getgid]    sys_getgid,
@@ -265,7 +231,6 @@ uint elapsedRight = elapsed % 1000;
 #endif
 ```
 
-cprintf("\n%d\t%s\t%d.%d\t%s\t%d\t", p->pid, p->name, elapsedLeft, elapsedRight, states[p->state], p->sz);
 ## syscall.h
 Line 25 - 30:
 ```C
@@ -304,12 +269,14 @@ Line 143 - 153:
 ```C
 uint uid;
 struct proc *curproc = myproc();
+
 if(argint(0, (int*)&uid) >= 0) {
   if(uid >= 0 && uid <= 32767) {
     curproc->uid = uid;
     return 0;
   }
 }
+
 return -1;
 ```
 
@@ -318,12 +285,14 @@ Line 158 - 168:
 ```C
 uint gid;
 struct proc *curproc = myproc();
+
 if(argint(0, (int*)&gid) >= 0) {
   if(gid >= 0 && gid <= 32767) {
     curproc->gid = gid;
     return 0;
   }
 }
+
 return -1;
 ```
 
@@ -332,6 +301,7 @@ Line 173 - 184:
 ```C
 uint max;
 struct uproc* proc;
+
 if (argint(0,(int*)&max) >= 0) {
   if (max == 1 || max == 16 || max == 64 || max == 72) {
     if (argptr(1, (void*)&proc, sizeof(struct uproc)) >= 0) {
@@ -339,6 +309,7 @@ if (argint(0,(int*)&max) >= 0) {
     }
   }
 }
+
 return -1;
 ```
 
@@ -351,6 +322,7 @@ if(argc == 1) {
 } else {
   int start = uptime();
   int pid = fork();
+
   if (pid > 0) {
     pid = wait();
   } else if (pid == 0) {
@@ -361,16 +333,19 @@ if(argc == 1) {
   } else {
     printf(1, "ERROR: Fork error return -1\n");
   }
+
   int end = uptime();
   int timelapse = end - start;
   int seconds = timelapse/1000;
   int ms = timelapse%1000;
   char *msZeros = "";
+
   if (ms < 10) {
     msZeros = "00";
   } else if (ms < 100) {
     msZeros = "0";
   }
+
   printf(
     1,
     "%s ran in %d.%s%d\n",
@@ -380,6 +355,7 @@ if(argc == 1) {
     ms
   );
 }
+
 exit();
 ```
 ## user.h
@@ -388,6 +364,7 @@ Line 52 - 58:
 uint getuid(void);
 uint getgid(void);
 uint getppid(void);
+
 int setuid(uint);
 int setgid(uint);
 int getprocs(uint max, struct uproc* table);
